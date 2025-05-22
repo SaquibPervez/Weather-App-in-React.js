@@ -7,7 +7,7 @@ function App() {
   const Apikey = "ccccdf483c706b26c24d74016c0690df"
 
   useEffect(()=>{
-    // fetchdata()
+    fetchdata()
   }, [])
 
   const [city, setCity] = useState("karachi")
