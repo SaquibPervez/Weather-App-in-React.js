@@ -4,19 +4,24 @@ import axios from 'axios'
 
 function App() {
 
-  const Apikey = "ccccdf483c706b26c24d74016c0690df"
+  const Apikey = "ccccdf483c706b26c24d74016c0690df";
+
+  const [city, setCity] = useState("")
+  const [apiresponse, setApiresponse] = useState(null)
 
   useEffect(()=>{
     fetchdata()
   }, [])
 
-  const [city, setCity] = useState("karachi")
-  const [apiresponse, setApiresponse] = useState(null)
+  useEffect(()=>{
+    getUserLocation()
+  }, [])
+
 
   const hour = new Date().getHours();
   console.log(hour, "hour")
-  // const isNight = hour >= 22 || hour < 6;
-  const isNight = hour >= 6 && hour < 22;
+  const isNight = hour >= 20 || hour < 6;
+  // const isNight = hour >= 6 && hour < 22;
   // const isDay = hour >= 6 && hour < 22;
   
   // console.log(isNight, "isNight")
@@ -28,18 +33,49 @@ function App() {
       const response = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${Apikey}&units=metric`)
       console.log("response", response.data)
       setApiresponse(response.data)
-      
     } catch (error) {
     console.error(error.message);
     }
   }
   // console.log(city, "city")
+function getUserLocation () {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(success, error);
+  }
+
+function success(position) {
+ console.log("position", position);
+ fetchuserloc(position)
+}
+
+function error() {
+  alert("Sorry, no position available, Search Instead... ");
+}
+}
+
+ const fetchuserloc = async (position)=> {
+    const {latitude, longitude} = position.coords
+    try {
+      const response = await axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${Apikey}&units=metric`)
+      console.log("response", response.data)
+      setApiresponse(response.data)
+      
+    } catch (error) {
+    console.error(error.message);
+    fetchdata()
+    }
+  }
+
 
   return (
     <>
       <div className="weather-container">
       <div className="search-container">
-      <form>
+      
+      <form onSubmit={(e)=>{
+        e.preventDefault();
+        fetchdata()
+      }}>
 
         <input 
           type='text' 
@@ -55,7 +91,7 @@ function App() {
         >
           Check Weather
         </button>
-      </div>
+      </div>  
       
       {apiresponse && (
         <div className={`weather-card ${isNight ? "night" : "day"}`}>
