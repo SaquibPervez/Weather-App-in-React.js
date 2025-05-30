@@ -10,10 +10,6 @@ function App() {
   const [apiresponse, setApiresponse] = useState(null)
 
   useEffect(()=>{
-    fetchdata()
-  }, [])
-
-  useEffect(()=>{
     getUserLocation()
   }, [])
 
